@@ -10,8 +10,8 @@ description: >-
 #   url: "https://<user>.github.io"
 #   baseurl: "/<repo>"
 # If using a custom domain, set url to that domain and baseurl to "".
-url: "https://example.github.io"
-baseurl: ""
+url: "https://melchi00.github.io"
+baseurl: "/ARNOLD_BNB_STUDIO"
 
 # ── Business details ──────────────────────────────────────────
 business:
