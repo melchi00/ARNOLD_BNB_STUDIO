@@ -1,0 +1,172 @@
+---
+layout: page
+title: Pricing
+kicker: KES · no hidden extras
+intro: Rates drop the longer you stay. Drag the ruler below and the total works itself out.
+description: Hourly, day-rate and add-on pricing for Arnold BNB Studio in Ongata Rongai, plus a calculator that gives you your exact total before you book.
+---
+
+<section class="section section--tight">
+  <div class="shell">
+
+    <!-- ── RATE TABLE ─────────────────────────────────── -->
+    <div class="glass" style="padding: clamp(1.5rem, 4vw, 2.25rem)" data-reveal>
+      <table class="rate-table">
+        <caption>Room rates. Cleaning is added once per booking; the service fee covers booking and support.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Length</th>
+            <th scope="col">What you pay</th>
+            <th scope="col">Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1–2 hours</td>
+            <td class="muted-text">Standard hourly</td>
+            <td>KES {{ site.data.pricing.standard_rate }} / hr</td>
+          </tr>
+          <tr class="is-highlight">
+            <td>3–5 hours</td>
+            <td class="muted-text">First two hours standard, the rest discounted</td>
+            <td>KES {{ site.data.pricing.discounted_rate }} / hr</td>
+          </tr>
+          <tr>
+            <td>6–10 hours</td>
+            <td class="muted-text">Flat Day Pass, no clock-watching</td>
+            <td>KES {{ site.data.pricing.day_rate }} flat</td>
+          </tr>
+          <tr>
+            <td>10+ hours</td>
+            <td class="muted-text">Day Pass plus each extra hour</td>
+            <td>KES {{ site.data.pricing.extra_hour_rate }} / hr</td>
+          </tr>
+          <tr>
+            <td>Weekends &amp; holidays</td>
+            <td class="muted-text">Added to the room subtotal only</td>
+            <td>+{{ site.data.pricing.weekend_surcharge_pct }}%</td>
+          </tr>
+          <tr>
+            <td>Cleaning</td>
+            <td class="muted-text">Once per booking, every booking</td>
+            <td>KES {{ site.data.pricing.cleaning_fee }}</td>
+          </tr>
+          <tr>
+            <td>Service fee</td>
+            <td class="muted-text">Booking, handover and support</td>
+            <td>{{ site.data.pricing.service_fee_pct }}% of subtotal</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── ADD-ONS ────────────────────────────────────── -->
+    <h2 style="margin-top:3.5rem" data-reveal>Add-ons</h2>
+    <div class="glass" style="padding: clamp(1.5rem, 4vw, 2.25rem); margin-top:1.5rem" data-reveal>
+      <table class="rate-table">
+        <caption>All optional. Tell us when you book so it's ready before you arrive.</caption>
+        <tbody>
+          {%- for a in site.data.addons %}
+          <tr>
+            <td>{{ a.emoji }} {{ a.label }}</td>
+            <td class="muted-text">{{ a.note }}</td>
+            <td>KES {{ a.price }}{% if a.per_unit %} ea{% endif %}</td>
+          </tr>
+          {%- endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── CALCULATOR ─────────────────────────────────── -->
+    <h2 style="margin-top:3.5rem" data-reveal>Work out your total</h2>
+    <p class="lede" data-reveal>Drag to set your hours. Everything updates as you go.</p>
+
+    <div class="glass calc" id="calc" data-reveal>
+
+      <div class="calc__top">
+        <p class="calc__hours" id="calcHoursOut">4<span>hours</span></p>
+        <span class="calc__tier" id="calcTier" data-tier="">✨ Sweet Spot</span>
+      </div>
+
+      <div class="ruler">
+        <label class="visually-hidden" for="calcHours">Booking length in hours</label>
+        <input class="ruler__input" type="range" id="calcHours"
+               min="1" max="12" step="1" value="4"
+               aria-describedby="calcTier">
+        <div class="ruler__ticks" aria-hidden="true">
+          {%- for i in (1..12) %}
+          <span class="ruler__tick" data-h="{{ i }}">{{ i }}</span>
+          {%- endfor %}
+        </div>
+      </div>
+
+      <div class="calc__weekend">
+        <label class="switch" for="calcWeekend">
+          <input class="switch__input" type="checkbox" id="calcWeekend">
+          <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <span>Weekend or public holiday</span>
+        </label>
+        <span class="calc__weekend-pill" id="calcWeekendPill">+{{ site.data.pricing.weekend_surcharge_pct }}% weekend</span>
+      </div>
+
+      <div class="calc__guests">
+        <label class="field__label" for="calcGuests" style="margin:0">Extra guests</label>
+        <input class="input" type="number" id="calcGuests" min="0" max="4" value="0" inputmode="numeric">
+        <span class="muted-text" style="font-size:var(--step--1)">Two are included. KES {{ site.data.addons[0].price }} each after that.</span>
+      </div>
+
+      <p class="calc__section-label">Add-ons</p>
+      <div class="addon-chips" role="group" aria-label="Optional add-ons">
+        {%- for a in site.data.addons %}
+        {%- unless a.key == 'extra_guest' %}
+        <button type="button" class="chip" data-addon="{{ a.key }}" aria-pressed="false">
+          {{ a.emoji }} {{ a.label }} <span class="chip__price">KES {{ a.price }}</span>
+        </button>
+        {%- endunless %}
+        {%- endfor %}
+      </div>
+
+      <div class="calc__total">
+        <div class="calc__lines" id="calcLines"></div>
+
+        <div class="calc__big">
+          <span class="calc__big-label">Your total</span>
+          <span class="calc__big-value" id="calcTotal" aria-live="polite">KES 0</span>
+        </div>
+        <p class="calc__effective" id="calcEffective"></p>
+
+        <div class="calc__cta">
+          <a class="btn btn--accent btn--block" id="calcCta"
+             data-base="{{ '/book.html' | relative_url }}"
+             href="{{ '/book.html' | relative_url }}">Lock it in on WhatsApp</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── HOW IT WORKS ───────────────────────────────── -->
+    <h2 style="margin-top:4rem" data-reveal>How booking works</h2>
+    <div class="steps">
+      <article class="glass step" data-reveal>
+        <span class="step__n">1</span>
+        <h3>Pick your hours</h3>
+        <p>Use the calculator above, or just tell us roughly when and for how long.</p>
+      </article>
+      <article class="glass step" data-reveal>
+        <span class="step__n">2</span>
+        <h3>Add extras</h3>
+        <p>Snacks, a romantic setup, photographer access — whatever you need ready on arrival.</p>
+      </article>
+      <article class="glass step" data-reveal>
+        <span class="step__n">3</span>
+        <h3>Confirm on WhatsApp</h3>
+        <p>Send the request, pay half by M-Pesa to hold the slot, and the time is yours.</p>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+{% include cta-band.html
+   heading="Know your number?"
+   sub="Send it over and we'll confirm the slot." %}

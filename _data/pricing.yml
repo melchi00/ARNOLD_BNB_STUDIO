@@ -1,0 +1,61 @@
+# ── Rates ─────────────────────────────────────────────────────
+# Edit these numbers to change pricing across the WHOLE site:
+# the pricing table, the calculator, the booking form and the
+# owner dashboard all read from here.
+currency: KES
+
+standard_rate: 350        # KES/hr for hours 1–2
+discounted_rate: 300      # KES/hr for hours 3–5
+day_rate: 2000            # flat rate covering hours 6–10
+day_rate_max_hours: 10    # beyond this, charge extra_hour_rate
+extra_hour_rate: 300      # KES per hour past hour 10
+
+weekend_surcharge_pct: 20 # % added to the room subtotal
+cleaning_fee: 500         # flat, every booking
+service_fee_pct: 10       # % of subtotal
+
+# ── Owner / operator split (owner.html only) ──────────────────
+cleaning_cost: 300        # what a clean actually costs you
+owner_pct: 65
+operator_pct: 35
+fixed_monthly_costs: 8000 # wifi, supplies, misc
+
+# ── Operating assumptions (projections only) ──────────────────
+open_hours_per_day: 12
+weekdays_per_month: 22
+weekend_days_per_month: 8
+
+# ── Public tier cards ─────────────────────────────────────────
+tiers:
+  - key: short
+    emoji: "🕐"
+    name: Short Stay
+    range: "1–2 hours"
+    price: "KES 350"
+    unit: "per hour"
+    blurb: "A nap, a call, a quick shoot. In and out."
+    featured: false
+  - key: sweet
+    emoji: "✨"
+    name: Sweet Spot
+    range: "3–5 hours"
+    price: "KES 300"
+    unit: "per hour after the first two"
+    blurb: "Long enough to actually settle in. Best value per hour."
+    featured: true
+  - key: day
+    emoji: "☀️"
+    name: Day Pass
+    range: "6–10 hours"
+    price: "KES 2,000"
+    unit: "flat"
+    blurb: "The whole working day, one price. No clock-watching."
+    featured: false
+  - key: extended
+    emoji: "🌙"
+    name: Extended
+    range: "10+ hours"
+    price: "KES 300"
+    unit: "per extra hour"
+    blurb: "Day Pass plus however long you need."
+    featured: false

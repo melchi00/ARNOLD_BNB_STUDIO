@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /owner.html
+Allow: /
+
+Sitemap: /sitemap.xml

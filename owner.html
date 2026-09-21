@@ -1,0 +1,353 @@
+---
+layout: page
+title: Owner dashboard
+sitemap: false
+robots: noindex, nofollow, noarchive
+description: Private.
+---
+
+<section class="section section--tight">
+  <div class="shell">
+
+    <!-- ── GATE ───────────────────────────────────────── -->
+    <div class="glass gate" id="ownerGate">
+      <h2>Owner access</h2>
+      <p>This page isn't linked anywhere. Enter the passphrase to open it.</p>
+
+      <form class="gate__form" id="gateForm">
+        <label class="visually-hidden" for="gateInput">Passphrase</label>
+        <input class="input" type="password" id="gateInput"
+               autocomplete="current-password" placeholder="Passphrase" required>
+        <button class="btn btn--accent btn--block" type="submit">Unlock</button>
+      </form>
+
+      <p class="gate__msg" id="gateMsg" role="status" aria-live="polite"></p>
+    </div>
+
+    <!-- ── DASHBOARD ──────────────────────────────────── -->
+    <div id="ownerDash" hidden>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+        <h2 style="margin:0">Revenue split</h2>
+        <button class="btn btn--ghost btn--pill" type="button" id="lockBtn">Lock this page</button>
+      </div>
+
+      <!-- Per-booking split -->
+      <div class="glass panel" style="margin-top:1.5rem">
+        <div class="field" style="max-width:280px">
+          <label class="field__label" for="dashSubtotal">Booking subtotal (room + add-ons)</label>
+          <input class="input" type="number" id="dashSubtotal" min="0" step="50" value="1300"
+                 inputmode="numeric">
+          <p class="field__hint">Before the service fee and cleaning fee.</p>
+        </div>
+
+        <div class="dash-grid">
+          <div class="glass payout-card">
+            <p class="payout-card__label">Owner payout · {{ site.data.pricing.owner_pct }}%</p>
+            <p class="payout-card__value" id="dashOwner">KES 0</p>
+            <p class="payout-card__note">Share of net revenue after the cleaning cost comes out.</p>
+          </div>
+          <div class="glass payout-card">
+            <p class="payout-card__label">Operator payout · {{ site.data.pricing.operator_pct }}% + service fee</p>
+            <p class="payout-card__value" id="dashOperator">KES 0</p>
+            <p class="payout-card__note">Includes the full service fee, which funds booking admin and marketing.</p>
+          </div>
+        </div>
+
+        <div class="calc__lines" id="dashLines" style="margin-top:1.5rem"></div>
+      </div>
+
+      <!-- Monthly projection -->
+      <div class="glass panel">
+        <h2>Monthly projection</h2>
+        <p class="muted-text" style="font-size:var(--step--1)">
+          Weighted by booking mix: Short Stay 45% at 2h, Sweet Spot 35% at 4h,
+          Day Pass 20% at 8h. {{ site.data.pricing.open_hours_per_day }} open hours a day,
+          {{ site.data.pricing.weekdays_per_month }} weekdays and
+          {{ site.data.pricing.weekend_days_per_month }} weekend days a month,
+          KES {{ site.data.pricing.fixed_monthly_costs }} fixed monthly costs.
+        </p>
+
+        <div class="field-row" style="max-width:420px;margin-top:1.5rem">
+          <div class="field">
+            <label class="field__label" for="occWeekday">Weekday occupancy %</label>
+            <input class="input" type="number" id="occWeekday" min="0" max="100" value="40" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label class="field__label" for="occWeekend">Weekend occupancy %</label>
+            <input class="input" type="number" id="occWeekend" min="0" max="100" value="70" inputmode="numeric">
+          </div>
+        </div>
+
+        <table class="proj-table">
+          <tbody id="projBody"></tbody>
+        </table>
+
+        <button class="btn btn--ghost" type="button" id="copyBtn" style="margin-top:1.75rem">
+          Copy summary
+        </button>
+        <span class="muted-text" id="copyMsg" style="font-size:var(--step--1);margin-left:0.75rem" role="status" aria-live="polite"></span>
+      </div>
+
+      <p class="muted-text" style="font-size:var(--step--1);margin-top:1.5rem;max-width:62ch">
+        This gate is obscurity, not security. Anyone determined can read the
+        page source. It keeps casual visitors out — nothing more. If this ever
+        holds anything sensitive, move it behind Netlify Identity, Cloudflare
+        Access, or a hosted form service with real authentication.
+      </p>
+
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ⚠️ CHANGE THIS: this is the SHA-256 hash of the passphrase "arnold2026".
+     Generate your own at https://emn178.github.io/online-tools/sha256.html
+     (type your passphrase, copy the hash, paste it below).
+     The plaintext passphrase never appears in this file. */
+  var OWNER_HASH = "edc122d518d2896c07de2b7ea02bfd883ba3e1dcd0b1fb46cd6bdb14ee562ab9";
+
+  var gate     = document.getElementById("ownerGate");
+  var gateForm = document.getElementById("gateForm");
+  var gateIn   = document.getElementById("gateInput");
+  var gateMsg  = document.getElementById("gateMsg");
+  var dash     = document.getElementById("ownerDash");
+
+  /* ── Gate ─────────────────────────────────────────── */
+
+  async function sha256(text) {
+    var buf = new TextEncoder().encode(text);
+    var hash = await crypto.subtle.digest("SHA-256", buf);
+    return Array.from(new Uint8Array(hash))
+      .map(function (b) { return b.toString(16).padStart(2, "0"); })
+      .join("");
+  }
+
+  function unlock() {
+    gate.hidden = true;
+    dash.hidden = false;
+    renderSplit();
+    renderProjection();
+  }
+
+  function lock() {
+    try { localStorage.removeItem("abs_owner_ok"); } catch (e) {}
+    dash.hidden = true;
+    gate.hidden = false;
+    gateIn.value = "";
+    gateMsg.textContent = "";
+    gateIn.focus();
+  }
+
+  try {
+    if (localStorage.getItem("abs_owner_ok") === "1") unlock();
+  } catch (e) {}
+
+  gateForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var entered = gateIn.value;
+    if (!entered) return;
+
+    var hash;
+    try {
+      hash = await sha256(entered);
+    } catch (err) {
+      gateMsg.textContent = "This browser can't hash — open the page over https.";
+      return;
+    }
+
+    if (hash === OWNER_HASH) {
+      try { localStorage.setItem("abs_owner_ok", "1"); } catch (e2) {}
+      unlock();
+    } else {
+      gate.classList.remove("is-wrong");
+      void gate.offsetWidth;
+      gate.classList.add("is-wrong");
+      gateMsg.textContent = "Nope.";
+      gateIn.select();
+    }
+  });
+
+  document.getElementById("lockBtn").addEventListener("click", lock);
+
+  /* ── Split maths ──────────────────────────────────── */
+
+  var P = window.ABS.PRICING;
+  var money = window.ABS.money;
+
+  function splitFor(subtotal) {
+    var serviceFee  = Math.round(subtotal * P.serviceFeePct / 100);
+    var cleaningFee = P.cleaningFee;
+    var netRevenue  = subtotal + cleaningFee;
+    var splittable  = netRevenue - P.cleaningCost;
+    return {
+      serviceFee: serviceFee,
+      cleaningFee: cleaningFee,
+      netRevenue: netRevenue,
+      splittable: splittable,
+      collected: subtotal + serviceFee + cleaningFee,
+      owner: splittable * P.ownerPct / 100,
+      operator: splittable * P.operatorPct / 100 + serviceFee
+    };
+  }
+
+  var subtotalIn = document.getElementById("dashSubtotal");
+
+  function renderSplit() {
+    var subtotal = Math.max(0, parseInt(subtotalIn.value, 10) || 0);
+    var s = splitFor(subtotal);
+
+    document.getElementById("dashOwner").textContent = money(s.owner);
+    document.getElementById("dashOperator").textContent = money(s.operator);
+
+    document.getElementById("dashLines").innerHTML = [
+      ["Subtotal", subtotal, false],
+      ["Service fee (" + P.serviceFeePct + "%)", s.serviceFee, false],
+      ["Cleaning fee charged", s.cleaningFee, false],
+      ["Total collected", s.collected, true],
+      ["Less cleaning cost", -P.cleaningCost, false],
+      ["Splittable", s.splittable, true]
+    ].map(function (row) {
+      return '<div class="calc__line' + (row[2] ? ' calc__line--sum' : '') +
+             '"><span>' + row[0] + '</span><span class="calc__amount">' +
+             money(row[1]) + '</span></div>';
+    }).join("");
+  }
+
+  subtotalIn.addEventListener("input", renderSplit);
+
+  /* ── Projection ───────────────────────────────────── */
+
+  var MIX = [
+    { label: "Short Stay", hours: 2, share: 0.45 },
+    { label: "Sweet Spot", hours: 4, share: 0.35 },
+    { label: "Day Pass",   hours: 8, share: 0.20 }
+  ];
+
+  /* Expected economics of one booking, weighted across the mix —
+     not a flat "average booking length", which would misprice the
+     Day Pass badly. */
+  function expectedBooking(isWeekend) {
+    var hours = 0, room = 0;
+    MIX.forEach(function (t) {
+      var cost = window.ABS.priceHours(t.hours).cost;
+      if (isWeekend) cost += cost * P.weekendSurchargePct / 100;
+      hours += t.share * t.hours;
+      room  += t.share * cost;
+    });
+    var serviceFee = room * P.serviceFeePct / 100;
+    var collected  = room + serviceFee + P.cleaningFee;
+    var splittable = room + P.cleaningFee - P.cleaningCost;
+    return {
+      hours: hours,
+      collected: collected,
+      owner: splittable * P.ownerPct / 100,
+      operator: splittable * P.operatorPct / 100 + serviceFee
+    };
+  }
+
+  function project(occWeekday, occWeekend) {
+    var wd = expectedBooking(false);
+    var we = expectedBooking(true);
+
+    var wdHours = P.weekdaysPerMonth * P.openHoursPerDay * occWeekday;
+    var weHours = P.weekendDaysPerMonth * P.openHoursPerDay * occWeekend;
+
+    var wdBookings = wdHours / wd.hours;
+    var weBookings = weHours / we.hours;
+    var bookings = wdBookings + weBookings;
+
+    var gross = wdBookings * wd.collected + weBookings * we.collected;
+    var variable = bookings * (P.cleaningCost + 150); /* cleaning + utilities est. */
+    var net = gross - variable - P.fixedMonthlyCosts;
+
+    var ownerTotal = wdBookings * wd.owner + weBookings * we.owner
+                     - P.fixedMonthlyCosts * P.ownerPct / 100;
+    var operatorTotal = wdBookings * wd.operator + weBookings * we.operator
+                        - P.fixedMonthlyCosts * P.operatorPct / 100;
+
+    return {
+      hours: wdHours + weHours,
+      bookings: bookings,
+      gross: gross,
+      net: net,
+      owner: Math.max(0, ownerTotal),
+      operator: Math.max(0, operatorTotal)
+    };
+  }
+
+  var occWd = document.getElementById("occWeekday");
+  var occWe = document.getElementById("occWeekend");
+
+  function currentProjection() {
+    return project(
+      Math.min(100, Math.max(0, parseFloat(occWd.value) || 0)) / 100,
+      Math.min(100, Math.max(0, parseFloat(occWe.value) || 0)) / 100
+    );
+  }
+
+  function renderProjection() {
+    var p = currentProjection();
+    document.getElementById("projBody").innerHTML = [
+      ["Booked hours", Math.round(p.hours) + " hrs"],
+      ["Bookings", Math.round(p.bookings)],
+      ["Gross revenue", money(p.gross)],
+      ["Net profit", money(p.net)],
+      ["Owner share", money(p.owner)],
+      ["Operator share", money(p.operator)]
+    ].map(function (r) {
+      return "<tr><th scope='row'>" + r[0] + "</th><td>" + r[1] + "</td></tr>";
+    }).join("");
+  }
+
+  occWd.addEventListener("input", renderProjection);
+  occWe.addEventListener("input", renderProjection);
+
+  /* ── Copy summary ─────────────────────────────────── */
+
+  document.getElementById("copyBtn").addEventListener("click", function () {
+    var subtotal = Math.max(0, parseInt(subtotalIn.value, 10) || 0);
+    var s = splitFor(subtotal);
+    var p = currentProjection();
+    var msg = document.getElementById("copyMsg");
+
+    var text = [
+      "{{ site.business.name }} — owner summary",
+      "",
+      "SAMPLE BOOKING",
+      "Subtotal:          " + money(subtotal),
+      "Service fee:       " + money(s.serviceFee),
+      "Cleaning fee:      " + money(s.cleaningFee),
+      "Total collected:   " + money(s.collected),
+      "Owner (" + P.ownerPct + "%):       " + money(s.owner),
+      "Operator (" + P.operatorPct + "%):    " + money(s.operator),
+      "",
+      "MONTHLY PROJECTION",
+      "Weekday occupancy: " + occWd.value + "%",
+      "Weekend occupancy: " + occWe.value + "%",
+      "Booked hours:      " + Math.round(p.hours),
+      "Bookings:          " + Math.round(p.bookings),
+      "Gross revenue:     " + money(p.gross),
+      "Net profit:        " + money(p.net),
+      "Owner share:       " + money(p.owner),
+      "Operator share:    " + money(p.operator)
+    ].join("\n");
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        msg.textContent = "Copied.";
+        setTimeout(function () { msg.textContent = ""; }, 2200);
+      }, function () {
+        msg.textContent = "Copy failed — select the page text instead.";
+      });
+    } else {
+      msg.textContent = "Clipboard unavailable in this browser.";
+    }
+  });
+
+})();
+</script>

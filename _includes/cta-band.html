@@ -1,0 +1,25 @@
+{%- comment %}
+  Usage:
+    {% include cta-band.html
+       heading="Ready when you are."
+       sub="Book your hour. Or your whole day." %}
+  Both params are optional and fall back to the defaults below.
+{%- endcomment %}
+
+<section class="cta-band" data-reveal>
+  <div class="shell cta-band__inner">
+    <h2 class="cta-band__heading">{{ include.heading | default: "Ready when you are." }}</h2>
+    <p class="cta-band__sub">{{ include.sub | default: "Book your hour. Or your whole day." }}</p>
+
+    <a class="btn btn--accent btn--lg btn--glow" href="{{ '/book.html' | relative_url }}">Book your hour</a>
+
+    <div class="cta-band__lines">
+      {%- for line in site.business.whatsapp %}
+      <a class="cta-band__wa" href="https://wa.me/{{ line.intl }}" target="_blank" rel="noopener">
+        WhatsApp {{ line.label }}
+      </a>
+      {%- endfor %}
+    </div>
+    <p class="cta-band__mail">{{ site.business.email }}</p>
+  </div>
+</section>

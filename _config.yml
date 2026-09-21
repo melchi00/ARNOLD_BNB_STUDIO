@@ -1,0 +1,67 @@
+title: Arnold BNB Studio
+tagline: Your private studio, by the hour.
+description: >-
+  An hourly, fully furnished studio in Olerai, Ongata Rongai. Book by the
+  hour, the half day, or the full day — for deep work, shoots, meetings,
+  or a quiet afternoon to yourself.
+
+# ── Deployment ────────────────────────────────────────────────
+# If deploying to https://<user>.github.io/<repo>, set:
+#   url: "https://<user>.github.io"
+#   baseurl: "/<repo>"
+# If using a custom domain, set url to that domain and baseurl to "".
+url: "https://example.github.io"
+baseurl: ""
+
+# ── Business details ──────────────────────────────────────────
+business:
+  name: Arnold BNB Studio
+  short_name: ARNOLD
+  location: Olerai, Ongata Rongai
+  region: Nairobi, Kenya
+  email: shnelki0987@gmail.com
+  hours: 8AM – 8PM daily
+  currency: KES
+  whatsapp:
+    - label: "0716 628 950"
+      intl: "254716628950"
+    - label: "0114 678 984"
+      intl: "254114678984"
+  social:
+    instagram: "#"
+    tiktok: "#"
+
+# ── Build ─────────────────────────────────────────────────────
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+sass:
+  style: compressed
+
+defaults:
+  # Pages get the page layout unless they say otherwise.
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: page
+  # Assets must NOT be wrapped in a layout — they have front matter
+  # only so Jekyll will process the Liquid inside them.
+  - scope:
+      path: "assets"
+    values:
+      layout: null
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - .gitignore
+  - vendor
+
+# jekyll-seo-tag social/meta defaults
+twitter:
+  card: summary_large_image
+logo: /assets/img/logo.png

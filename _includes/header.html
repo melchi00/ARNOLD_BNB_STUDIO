@@ -1,0 +1,43 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="siteHeader">
+  <div class="shell site-header__inner">
+
+    <a class="brand" href="{{ '/' | relative_url }}">
+      <span class="brand__mark">{{ site.business.short_name }}</span><span class="brand__sub">studio</span>
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <ul class="nav__list">
+        <li><a class="nav__link{% if page.url == '/' %} is-current{% endif %}" href="{{ '/' | relative_url }}">Home</a></li>
+        <li><a class="nav__link{% if page.url contains 'spaces' %} is-current{% endif %}" href="{{ '/spaces.html' | relative_url }}">Spaces</a></li>
+        <li><a class="nav__link{% if page.url contains 'pricing' %} is-current{% endif %}" href="{{ '/pricing.html' | relative_url }}">Pricing</a></li>
+        <li><a class="nav__link{% if page.url contains 'contact' %} is-current{% endif %}" href="{{ '/contact.html' | relative_url }}">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      {% include theme-toggle.html %}
+      <a class="btn btn--accent btn--pill site-header__cta" href="{{ '/book.html' | relative_url }}">Book now</a>
+      <button class="hamburger" id="navToggle" type="button"
+              aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<div class="mobile-nav" id="mobileNav" hidden>
+  <nav aria-label="Mobile">
+    <ul class="mobile-nav__list">
+      <li style="--i:0"><a href="{{ '/' | relative_url }}">Home</a></li>
+      <li style="--i:1"><a href="{{ '/spaces.html' | relative_url }}">Spaces</a></li>
+      <li style="--i:2"><a href="{{ '/pricing.html' | relative_url }}">Pricing</a></li>
+      <li style="--i:3"><a href="{{ '/book.html' | relative_url }}">Book</a></li>
+      <li style="--i:4"><a href="{{ '/contact.html' | relative_url }}">Contact</a></li>
+    </ul>
+  </nav>
+  <p class="mobile-nav__foot" style="--i:5">{{ site.business.location }} · {{ site.business.hours }}</p>
+</div>

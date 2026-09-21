@@ -1,0 +1,158 @@
+---
+layout: home
+title: Arnold BNB Studio
+description: A furnished studio in Olerai, Ongata Rongai you can book by the hour — for deep work, shoots, meetings, or an afternoon to yourself. From KES 350/hr.
+---
+
+<!-- ── HERO ─────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero__wash" aria-hidden="true"></div>
+  <div class="hero__orb" aria-hidden="true"></div>
+
+  <div class="shell hero__inner">
+    <h1 class="hero__title">
+      Your private studio,<br>
+      <em>by the hour.</em>
+    </h1>
+
+    <p class="hero__sub">
+      A furnished bedsitter in Olerai you can have for one hour or ten.
+      Show up, close the door, and use it however you need.
+    </p>
+
+    <div class="hero__actions">
+      <a class="btn btn--accent btn--lg btn--glow" href="{{ '/book.html' | relative_url }}">Book your hour</a>
+      <a class="btn btn--ghost btn--lg" href="{{ '/pricing.html' | relative_url }}">See pricing</a>
+    </div>
+
+    <p class="hero__stats">
+      <span>From <strong>KES 350</strong> an hour</span>
+      <span>Open <strong>{{ site.business.hours }}</strong></span>
+      <span><strong>{{ site.business.location }}</strong></span>
+    </p>
+  </div>
+</section>
+
+<!-- ── BENTO FEATURES ───────────────────────────────────── -->
+<section class="section" id="what">
+  <div class="shell">
+    <h2 data-reveal>Everything you need. Nothing you don't.</h2>
+    <p class="lede" data-reveal>
+      One room, set up properly, rented in the blocks people actually use.
+    </p>
+
+    <div class="bento">
+
+      <article class="glass bento__cell bento__cell--2x2" data-reveal>
+        <h3 class="bento__title">Hourly, half day, or the whole day</h3>
+        <p class="bento__text">
+          Pay for the time you use. Rates drop as your booking gets longer,
+          and six hours or more is one flat price.
+        </p>
+
+        <div class="tier-bars">
+          {%- for tier in site.data.pricing.tiers limit: 3 %}
+          <div class="tier-bar">
+            <div class="tier-bar__head">
+              <strong>{{ tier.name }}</strong>
+              <span>{{ tier.range }} · {{ tier.price }}</span>
+            </div>
+            <div class="tier-bar__track">
+              <div class="tier-bar__fill" style="--w: {% case tier.key %}{% when 'short' %}28%{% when 'sweet' %}62%{% else %}100%{% endcase %}"></div>
+            </div>
+          </div>
+          {%- endfor %}
+        </div>
+      </article>
+
+      <article class="glass bento__cell bento__cell--1x1" data-reveal>
+        <svg class="bento__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 10.5 12 3l9 7.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5 9.7V20h14V9.7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9.5 20v-5.5h5V20" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h3 class="bento__title">Fully furnished</h3>
+        <p class="bento__text">
+          Bed, sofa, work desk, smart TV, sound system, private bathroom,
+          and a balcony that gets real light.
+        </p>
+      </article>
+
+      <article class="glass bento__cell bento__cell--1x1" data-reveal>
+        <svg class="bento__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2.5" y="6" width="19" height="14" rx="2.5"/>
+          <circle cx="12" cy="13" r="3.6"/>
+          <path d="M8.5 6l1.4-2.4h4.2L15.5 6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h3 class="bento__title">Content-ready</h3>
+        <p class="bento__text">
+          Add photographer access and the room is yours to light,
+          rearrange and shoot in.
+        </p>
+      </article>
+
+      <article class="glass bento__cell bento__cell--2x1" data-reveal>
+        <h3 class="bento__title">Add what you need, skip what you don't</h3>
+        <p class="bento__text">
+          Every extra is optional and priced on its own.
+        </p>
+        <div class="addon-chips">
+          {%- for a in site.data.addons %}
+          <span class="chip">{{ a.emoji }} {{ a.label }} <span class="chip__price">KES {{ a.price }}</span></span>
+          {%- endfor %}
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING TEASER ───────────────────────────────────── -->
+<section class="section section--tight">
+  <div class="shell">
+    <h2 data-reveal>What it costs</h2>
+    <p class="lede" data-reveal>
+      Three ways most people book. The middle one is the best value per hour.
+    </p>
+
+    <div class="teaser-grid">
+      {%- for tier in site.data.pricing.tiers limit: 3 %}
+      <article class="glass tier-card{% if tier.featured %} is-featured{% endif %}" data-reveal>
+        {%- if tier.featured %}<span class="tier-card__flag">Best value</span>{% endif %}
+        <span class="tier-card__emoji" aria-hidden="true">{{ tier.emoji }}</span>
+        <h3 class="tier-card__name">{{ tier.name }}</h3>
+        <p class="tier-card__range">{{ tier.range }}</p>
+        <p class="tier-card__price">{{ tier.price }}</p>
+        <p class="tier-card__unit">{{ tier.unit }}</p>
+        <p class="tier-card__blurb">{{ tier.blurb }}</p>
+      </article>
+      {%- endfor %}
+    </div>
+
+    <p style="margin-top:2rem" data-reveal>
+      <a class="btn btn--ghost" href="{{ '/pricing.html' | relative_url }}">See full pricing and work out your total</a>
+    </p>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ─────────────────────────────────────── -->
+<section class="section">
+  <div class="shell">
+    <h2 data-reveal>Who books it</h2>
+
+    <div class="quotes">
+      {%- for t in site.data.testimonials %}
+      <figure class="quote" data-reveal>
+        <div class="quote__avatar" aria-hidden="true">{{ t.initials }}</div>
+        <div>
+          <blockquote class="quote__text">{{ t.quote }}</blockquote>
+          <div class="quote__stars" aria-label="Five out of five">★★★★★</div>
+          <figcaption class="quote__who"><strong>{{ t.name }}</strong> · {{ t.role }}</figcaption>
+        </div>
+      </figure>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+{% include cta-band.html %}

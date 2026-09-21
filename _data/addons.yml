@@ -1,0 +1,39 @@
+# Each add-on becomes a chip in the calculator, a checkbox on the
+# booking form, and a row in the pricing table. `key` must stay
+# unique and match nothing else — it is used as the DOM id.
+- key: extra_guest
+  label: Extra guest
+  price: 200
+  emoji: "👥"
+  per_unit: true
+  note: "Per guest beyond the first two."
+- key: early_checkin
+  label: Early check-in
+  price: 300
+  emoji: "🌅"
+  per_unit: false
+  note: "Arrive up to an hour before your slot."
+- key: late_checkout
+  label: Late checkout
+  price: 300
+  emoji: "🕙"
+  per_unit: false
+  note: "Stay up to an hour past your slot."
+- key: snacks
+  label: Snacks & drinks
+  price: 500
+  emoji: "🥤"
+  per_unit: false
+  note: "Soft drinks, water and a snack board waiting for you."
+- key: photographer
+  label: Photographer access
+  price: 800
+  emoji: "📸"
+  per_unit: false
+  note: "Bring lighting and gear, rearrange the furniture."
+- key: romantic
+  label: Romantic setup
+  price: 600
+  emoji: "🌹"
+  per_unit: false
+  note: "Candles, petals and soft lighting set before you arrive."

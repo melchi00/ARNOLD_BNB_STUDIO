@@ -1,0 +1,88 @@
+---
+layout: page
+title: Get in touch
+kicker: Olerai, Ongata Rongai
+intro: Two WhatsApp lines, one inbox, and answers to the things people ask most.
+description: Contact Arnold BNB Studio in Olerai, Ongata Rongai — WhatsApp, email, opening hours, location and frequently asked questions.
+---
+
+<section class="section section--tight">
+  <div class="shell">
+
+    <div class="contact-grid">
+
+      <article class="glass contact-card" data-reveal>
+        <h2>WhatsApp</h2>
+        <ul>
+          {%- for line in site.business.whatsapp %}
+          <li><a href="https://wa.me/{{ line.intl }}" target="_blank" rel="noopener">{{ line.label }}</a></li>
+          {%- endfor %}
+        </ul>
+        <p class="muted-text" style="font-size:var(--step--1);margin-top:0.9rem">
+          Either line reaches us. Whoever's free replies first.
+        </p>
+      </article>
+
+      <article class="glass contact-card" data-reveal>
+        <h2>Email</h2>
+        <ul>
+          <li><a href="mailto:{{ site.business.email }}">{{ site.business.email }}</a></li>
+        </ul>
+        <p class="muted-text" style="font-size:var(--step--1);margin-top:0.9rem">
+          Better for longer questions, invoices or shoot plans.
+        </p>
+      </article>
+
+      <article class="glass contact-card" data-reveal>
+        <h2>Where &amp; when</h2>
+        <ul>
+          <li>{{ site.business.location }}</li>
+          <li class="muted-text">{{ site.business.region }}</li>
+          <li style="margin-top:0.5rem"><strong>{{ site.business.hours }}</strong></li>
+        </ul>
+        <p class="muted-text" style="font-size:var(--step--1);margin-top:0.9rem">
+          Exact directions and the gate code come once your slot is confirmed.
+        </p>
+      </article>
+
+    </div>
+
+    <div class="map-frame" data-reveal>
+      <iframe
+        title="Map showing Olerai, Ongata Rongai"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=36.7280%2C-1.4150%2C36.7780%2C-1.3750&layer=mapnik">
+      </iframe>
+    </div>
+    <p class="muted-text" style="font-size:var(--step--1);margin-top:0.75rem">
+      Approximate area only — we send the exact pin on WhatsApp once you book.
+    </p>
+
+    <!-- ── FAQ ────────────────────────────────────────── -->
+    <h2 style="margin-top:4rem" data-reveal>Questions people ask</h2>
+
+    <div class="faq" data-reveal>
+      {%- for item in site.data.faq %}
+      <div class="faq__item">
+        <h3 style="margin:0">
+          <button class="faq__q" type="button"
+                  aria-expanded="false" aria-controls="faq-a-{{ forloop.index }}"
+                  id="faq-q-{{ forloop.index }}">
+            {{ item.question }}
+            <span class="faq__sign" aria-hidden="true"></span>
+          </button>
+        </h3>
+        <div class="faq__a" id="faq-a-{{ forloop.index }}" role="region" aria-labelledby="faq-q-{{ forloop.index }}">
+          <p>{{ item.answer }}</p>
+        </div>
+      </div>
+      {%- endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% include cta-band.html
+   heading="Still deciding?"
+   sub="Send us a message. No deposit until you're sure." %}

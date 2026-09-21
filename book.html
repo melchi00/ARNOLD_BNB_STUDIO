@@ -1,0 +1,115 @@
+---
+layout: page
+title: Book the studio
+kicker: Takes about a minute
+intro: Fill this in, then send it to whichever WhatsApp line you prefer. We'll confirm the slot and send M-Pesa details.
+description: Book Arnold BNB Studio in Ongata Rongai by the hour. Fill in your details and send the request straight to WhatsApp.
+---
+
+<section class="section section--tight">
+  <div class="shell">
+
+    <div class="book-grid">
+
+      <!-- ── FORM ───────────────────────────────────── -->
+      <form class="glass book-form" id="bookForm" novalidate data-reveal>
+
+        <div class="field">
+          <label class="field__label" for="bkName">Your name</label>
+          <input class="input" type="text" id="bkName" name="name"
+                 autocomplete="name" placeholder="e.g. Wanjiku Mwangi" required>
+          <p class="field__hint">So we know who's at the door.</p>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field__label" for="bkDate">Date</label>
+            <input class="input" type="date" id="bkDate" name="date">
+          </div>
+          <div class="field">
+            <label class="field__label" for="bkTime">Start time</label>
+            <input class="input" type="time" id="bkTime" name="time" value="10:00">
+            <p class="field__hint">We're open {{ site.business.hours }}.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="bkHours">
+            How long — <span id="bkHoursOut">4 hours</span>
+          </label>
+          <input class="ruler__input" type="range" id="bkHours"
+                 min="1" max="12" step="1" value="4">
+        </div>
+
+        <div class="field">
+          <label class="switch" for="bkWeekend">
+            <input class="switch__input" type="checkbox" id="bkWeekend">
+            <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+            <span>This is a weekend or public holiday</span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="bkGuests">Extra guests</label>
+          <input class="input" type="number" id="bkGuests" min="0" max="4" value="0"
+                 inputmode="numeric" style="max-width:120px">
+          <p class="field__hint">Two people are included. KES {{ site.data.addons[0].price }} for each extra.</p>
+        </div>
+
+        <fieldset style="border:0;padding:0;margin:0 0 1.25rem">
+          <legend class="field__label" style="padding:0">Add-ons</legend>
+          {%- for a in site.data.addons %}
+          {%- unless a.key == 'extra_guest' %}
+          <div class="checkbox-row">
+            <input type="checkbox" id="bk_{{ a.key }}" data-addon-box="{{ a.key }}">
+            <label for="bk_{{ a.key }}">
+              {{ a.emoji }} {{ a.label }} — KES {{ a.price }}<br>
+              <span class="muted-text" style="font-size:var(--step--1)">{{ a.note }}</span>
+            </label>
+          </div>
+          {%- endunless %}
+          {%- endfor %}
+        </fieldset>
+
+        <div class="field">
+          <label class="field__label" for="bkNotes">Anything we should know</label>
+          <textarea class="textarea" id="bkNotes"
+                    placeholder="Shooting a lookbook, need the sofa moved — that kind of thing."></textarea>
+        </div>
+
+      </form>
+
+      <!-- ── LIVE SUMMARY ───────────────────────────── -->
+      <aside class="glass book-summary" data-reveal>
+        <p class="calc__section-label" style="margin-bottom:0.6rem">Your booking</p>
+        <p class="badge" id="bkTier">✨ Sweet Spot</p>
+
+        <div class="calc__lines" id="bkLines" style="margin-top:1.25rem"></div>
+
+        <div class="calc__big" style="border-top:1px solid var(--line);padding-top:1.25rem">
+          <span class="calc__big-label">Total</span>
+          <span class="calc__big-value" id="bkTotal" aria-live="polite">KES 0</span>
+        </div>
+
+        <p class="field__hint" style="margin-top:0.75rem">
+          Half up front by M-Pesa holds the slot. Balance on arrival.
+        </p>
+
+        <div class="wa-buttons">
+          {%- for line in site.business.whatsapp %}
+          <button type="button" class="btn btn--accent btn--block" data-wa="{{ line.intl }}">
+            Send to {{ line.label }}
+          </button>
+          {%- endfor %}
+        </div>
+
+        <p class="wa-note">We reply from whichever line is faster.</p>
+        <p class="wa-mail">
+          Prefer email? <a href="mailto:{{ site.business.email }}">{{ site.business.email }}</a>
+        </p>
+      </aside>
+
+    </div>
+
+  </div>
+</section>
