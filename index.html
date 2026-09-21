@@ -1,105 +1,119 @@
 ---
 layout: home
 title: Arnold BNB Studio
-description: A furnished studio in Olerai, Ongata Rongai you can book by the hour — for deep work, shoots, meetings, or an afternoon to yourself. From KES 350/hr.
+description: A furnished studio in Olerai, Ongata Rongai, rented by the hour from 8am. Pick the hours you need — work, shoot, rest — then hand back the keys.
 ---
 
-<!-- ── HERO ─────────────────────────────────────────────── -->
+<!-- ── HERO: the day itself, and what a slice of it costs ── -->
 <section class="hero">
-  <div class="hero__wash" aria-hidden="true"></div>
-  <div class="hero__orb" aria-hidden="true"></div>
-
   <div class="shell hero__inner">
-    <h1 class="hero__title">
-      Your private studio,<br>
-      <em>by the hour.</em>
-    </h1>
 
+    <h1 class="hero__title">Take any part of the day.</h1>
     <p class="hero__sub">
-      A furnished bedsitter in Olerai you can have for one hour or ten.
-      Show up, close the door, and use it however you need.
+      A furnished studio in Olerai, rented by the hour from 8am.
+      Work, shoot, rest, then hand back the keys.
     </p>
 
-    <div class="hero__actions">
-      <a class="btn btn--accent btn--lg btn--glow" href="{{ '/book.html' | relative_url }}">Book your hour</a>
-      <a class="btn btn--ghost btn--lg" href="{{ '/pricing.html' | relative_url }}">See pricing</a>
+    <div class="daystrip" id="daystrip">
+      <p class="calc__section-label" id="dayHelp">Tap a start hour, then an end hour.</p>
+
+      <div class="daystrip__scale" role="group" aria-labelledby="dayHelp">
+        {%- assign hours = "8,9,10,11,12,13,14,15,16,17,18,19" | split: "," %}
+        {%- for h in hours %}
+        <button type="button" class="daystrip__hour"
+                data-hour="{{ h }}" style="--i: {{ forloop.index0 }}"
+                aria-pressed="false">
+          <span class="visually-hidden">{{ h }}:00</span>
+        </button>
+        {%- endfor %}
+      </div>
+
+      <div class="daystrip__ticks" aria-hidden="true">
+        {%- for h in hours %}
+        <span class="daystrip__tick" data-tick="{{ h }}">{{ h }}</span>
+        {%- endfor %}
+      </div>
+
+      <div class="daystrip__readout">
+        <div>
+          <p class="daystrip__when" id="dayWhen"><em>No hours picked yet</em></p>
+          <p class="daystrip__hint" id="dayHint">
+            Open 8am to 8pm. One hour minimum.
+          </p>
+        </div>
+        <p class="daystrip__price" id="dayPrice"></p>
+      </div>
+
+      <div class="hero__actions">
+        <a class="btn btn--accent" id="dayBook"
+           data-base="{{ '/book.html' | relative_url }}"
+           href="{{ '/book.html' | relative_url }}">Book these hours</a>
+        <a class="btn btn--ghost" href="{{ '/pricing.html' | relative_url }}">See all rates</a>
+      </div>
     </div>
 
-    <p class="hero__stats">
-      <span>From <strong>KES 350</strong> an hour</span>
-      <span>Open <strong>{{ site.business.hours }}</strong></span>
-      <span><strong>{{ site.business.location }}</strong></span>
-    </p>
   </div>
 </section>
 
-<!-- ── BENTO FEATURES ───────────────────────────────────── -->
-<section class="section" id="what">
+<!-- ── WHAT THE ROOM IS ── -->
+<section class="section">
   <div class="shell">
-    <h2 data-reveal>Everything you need. Nothing you don't.</h2>
-    <p class="lede" data-reveal>
-      One room, set up properly, rented in the blocks people actually use.
-    </p>
+    <h2>One room, set up to be used four different ways.</h2>
 
     <div class="bento">
 
-      <article class="glass bento__cell bento__cell--2x2" data-reveal>
-        <h3 class="bento__title">Hourly, half day, or the whole day</h3>
-        <p class="bento__text">
-          Pay for the time you use. Rates drop as your booking gets longer,
-          and six hours or more is one flat price.
-        </p>
-
-        <div class="tier-bars">
-          {%- for tier in site.data.pricing.tiers limit: 3 %}
-          <div class="tier-bar">
-            <div class="tier-bar__head">
-              <strong>{{ tier.name }}</strong>
-              <span>{{ tier.range }} · {{ tier.price }}</span>
+      <article class="feature">
+        <h3 class="feature__title">Priced by the hour</h3>
+        <div>
+          <p class="feature__body">
+            Short stays are charged by the hour. Past three hours the rate
+            drops, and from six hours it becomes one flat price for the day.
+          </p>
+          <div class="tier-bars">
+            {%- for tier in site.data.pricing.tiers limit: 3 %}
+            <div class="tier-bar">
+              <div class="tier-bar__head">
+                <strong>{{ tier.name }}</strong>
+                <span>{{ tier.range }}, {{ tier.price }}</span>
+              </div>
+              <div class="tier-bar__track">
+                <div class="tier-bar__fill" style="--w: {% case tier.key %}{% when 'short' %}26%{% when 'sweet' %}58%{% else %}100%{% endcase %}"></div>
+              </div>
             </div>
-            <div class="tier-bar__track">
-              <div class="tier-bar__fill" style="--w: {% case tier.key %}{% when 'short' %}28%{% when 'sweet' %}62%{% else %}100%{% endcase %}"></div>
-            </div>
+            {%- endfor %}
           </div>
-          {%- endfor %}
         </div>
       </article>
 
-      <article class="glass bento__cell bento__cell--1x1" data-reveal>
-        <svg class="bento__icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 10.5 12 3l9 7.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M5 9.7V20h14V9.7" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M9.5 20v-5.5h5V20" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <h3 class="bento__title">Fully furnished</h3>
-        <p class="bento__text">
-          Bed, sofa, work desk, smart TV, sound system, private bathroom,
-          and a balcony that gets real light.
+      <article class="feature">
+        <h3 class="feature__title">Furnished, not staged</h3>
+        <p class="feature__body">
+          Queen bed, sofa, work desk with outlets in reach, smart TV, sound
+          system, private bathroom with hot water, kettle and a small fridge.
+          A balcony that is big enough to actually sit on.
         </p>
       </article>
 
-      <article class="glass bento__cell bento__cell--1x1" data-reveal>
-        <svg class="bento__icon" viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="2.5" y="6" width="19" height="14" rx="2.5"/>
-          <circle cx="12" cy="13" r="3.6"/>
-          <path d="M8.5 6l1.4-2.4h4.2L15.5 6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <h3 class="bento__title">Content-ready</h3>
-        <p class="bento__text">
-          Add photographer access and the room is yours to light,
-          rearrange and shoot in.
+      <article class="feature">
+        <h3 class="feature__title">East light until two</h3>
+        <p class="feature__body">
+          The room faces east, so mornings are soft and even. That is why
+          shoots book before noon. Add photographer access and you can bring
+          lighting, move the furniture and use the whole space.
         </p>
       </article>
 
-      <article class="glass bento__cell bento__cell--2x1" data-reveal>
-        <h3 class="bento__title">Add what you need, skip what you don't</h3>
-        <p class="bento__text">
-          Every extra is optional and priced on its own.
-        </p>
-        <div class="addon-chips">
-          {%- for a in site.data.addons %}
-          <span class="chip">{{ a.emoji }} {{ a.label }} <span class="chip__price">KES {{ a.price }}</span></span>
-          {%- endfor %}
+      <article class="feature">
+        <h3 class="feature__title">Extras, only if you want them</h3>
+        <div>
+          <p class="feature__body">
+            Each is priced on its own and set up before you arrive.
+          </p>
+          <div class="addon-chips">
+            {%- for a in site.data.addons %}
+            <span class="chip">{{ a.label }} <span class="chip__price">KES {{ a.price }}</span></span>
+            {%- endfor %}
+          </div>
         </div>
       </article>
 
@@ -107,52 +121,49 @@ description: A furnished studio in Olerai, Ongata Rongai you can book by the hou
   </div>
 </section>
 
-<!-- ── PRICING TEASER ───────────────────────────────────── -->
+<!-- ── RATES ── -->
 <section class="section section--tight">
   <div class="shell">
-    <h2 data-reveal>What it costs</h2>
-    <p class="lede" data-reveal>
-      Three ways most people book. The middle one is the best value per hour.
-    </p>
+    <h2>What it costs</h2>
 
     <div class="teaser-grid">
       {%- for tier in site.data.pricing.tiers limit: 3 %}
-      <article class="glass tier-card{% if tier.featured %} is-featured{% endif %}" data-reveal>
-        {%- if tier.featured %}<span class="tier-card__flag">Best value</span>{% endif %}
-        <span class="tier-card__emoji" aria-hidden="true">{{ tier.emoji }}</span>
-        <h3 class="tier-card__name">{{ tier.name }}</h3>
-        <p class="tier-card__range">{{ tier.range }}</p>
-        <p class="tier-card__price">{{ tier.price }}</p>
-        <p class="tier-card__unit">{{ tier.unit }}</p>
+      <article class="tier-card{% if tier.featured %} is-featured{% endif %}">
+        <div>
+          <h3 class="tier-card__name">{{ tier.name }}</h3>
+          <p class="tier-card__range">{{ tier.range }}</p>
+        </div>
         <p class="tier-card__blurb">{{ tier.blurb }}</p>
+        <div>
+          <p class="tier-card__price">{{ tier.price }}</p>
+          <p class="tier-card__unit">{{ tier.unit }}</p>
+        </div>
       </article>
       {%- endfor %}
     </div>
 
-    <p style="margin-top:2rem" data-reveal>
-      <a class="btn btn--ghost" href="{{ '/pricing.html' | relative_url }}">See full pricing and work out your total</a>
+    <p style="margin-top:1.75rem">
+      <a class="btn btn--ghost" href="{{ '/pricing.html' | relative_url }}">Work out your total</a>
     </p>
   </div>
 </section>
 
-<!-- ── TESTIMONIALS ─────────────────────────────────────── -->
+<!-- ── WHO BOOKS IT ── -->
 <section class="section">
   <div class="shell">
-    <h2 data-reveal>Who books it</h2>
+    <h2>Who books it</h2>
 
     <div class="quotes">
       {%- for t in site.data.testimonials %}
-      <figure class="quote" data-reveal>
-        <div class="quote__avatar" aria-hidden="true">{{ t.initials }}</div>
-        <div>
-          <blockquote class="quote__text">{{ t.quote }}</blockquote>
-          <div class="quote__stars" aria-label="Five out of five">★★★★★</div>
-          <figcaption class="quote__who"><strong>{{ t.name }}</strong> · {{ t.role }}</figcaption>
-        </div>
+      <figure class="quote">
+        <blockquote class="quote__text">{{ t.quote }}</blockquote>
+        <figcaption class="quote__who"><strong>{{ t.name }}</strong>, {{ t.role }}</figcaption>
       </figure>
       {%- endfor %}
     </div>
   </div>
 </section>
 
-{% include cta-band.html %}
+{% include cta-band.html
+   heading="The room is empty most afternoons."
+   sub="Pick your hours and send them over. We confirm the slot on WhatsApp and hold it with half up front." %}

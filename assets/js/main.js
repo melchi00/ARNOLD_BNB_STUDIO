@@ -227,30 +227,37 @@
 
   /* ── Scroll reveals ─────────────────────────────────────── */
 
-  function initReveals() {
-    var items = $$("[data-reveal]");
-    if (!items.length) return;
+  /* Scrolling the page moves through the day: a dusk veil deepens
+     toward the foot of the page, and a rail on the edge marks the
+     hour you have scrolled to. This replaces per-section fade-ups,
+     which are the generic default and say nothing about the subject. */
+  function initDayProgress() {
+    if (reduceMotion) return;
 
-    if (reduceMotion || !("IntersectionObserver" in window)) {
-      items.forEach(function (el) { el.classList.add("is-visible"); });
-      return;
-    }
+    var rail = document.createElement("div");
+    rail.className = "dayrail";
+    rail.setAttribute("aria-hidden", "true");
+    var OPEN = 8, CLOSE = 20, N = CLOSE - OPEN;
+    for (var i = 0; i < N; i++) rail.appendChild(document.createElement("span"));
+    document.body.appendChild(rail);
+    var marks = $$("span", rail);
 
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-visible");
-        io.unobserve(entry.target);
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        document.documentElement.style.setProperty("--day-progress", p.toFixed(3));
+        var lit = Math.round(p * N);
+        marks.forEach(function (m, i) { m.classList.toggle("is-past", i < lit); });
+        ticking = false;
       });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
-
-    items.forEach(function (el, i) {
-      // Stagger only within a group of siblings, not across the page.
-      var sibs = el.parentElement ? $$("[data-reveal]", el.parentElement) : [];
-      var idx = sibs.indexOf(el);
-      el.style.setProperty("--delay", (idx > 0 ? idx * 80 : 0) + "ms");
-      io.observe(el);
-    });
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
   }
 
   /* ── FAQ accordion ──────────────────────────────────────── */
@@ -290,6 +297,102 @@
     }
     host.appendChild(wrap);
     setTimeout(function () { wrap.remove(); }, 1400);
+  }
+
+  /* ── Day strip (home hero) ──────────────────────────────────
+     Pick a start hour, then an end hour. Prices the block with the
+     same tier logic the rest of the site uses, so the hero is the
+     product rather than a picture of it. */
+
+  function initDayStrip() {
+    var strip = $("#daystrip");
+    if (!strip) return;
+
+    var hours   = $$(".daystrip__hour", strip);
+    var ticks   = $$(".daystrip__tick", strip);
+    var whenOut = $("#dayWhen");
+    var priceOut = $("#dayPrice");
+    var hintOut = $("#dayHint");
+    var bookCta = $("#dayBook");
+
+    var OPEN = 8, CLOSE = 20;
+    var start = null, end = null;
+
+    /* Height of each unlit bar traces the arc of daylight, so the
+       strip reads as a day even before anything is selected. */
+    hours.forEach(function (btn) {
+      var h = parseInt(btn.getAttribute("data-hour"), 10);
+      var noon = 13.5;
+      var arc = 1 - Math.pow((h - noon) / (CLOSE - noon), 2);
+      btn.style.setProperty("--h", (28 + arc * 52).toFixed(0) + "%");
+    });
+
+    function label(h) {
+      var suffix = h < 12 ? "am" : "pm";
+      var display = h % 12 === 0 ? 12 : h % 12;
+      return display + suffix;
+    }
+
+    function render() {
+      var lo = start, hi = end;
+      if (lo !== null && hi !== null && hi < lo) { var t = lo; lo = hi; hi = t; }
+
+      hours.forEach(function (btn) {
+        var h = parseInt(btn.getAttribute("data-hour"), 10);
+        var on = lo !== null && (hi === null ? h === lo : h >= lo && h <= hi);
+        btn.setAttribute("aria-pressed", String(on));
+      });
+      ticks.forEach(function (tk) {
+        var h = parseInt(tk.getAttribute("data-tick"), 10);
+        var on = lo !== null && (hi === null ? h === lo : h >= lo && h <= hi);
+        tk.classList.toggle("is-on", on);
+      });
+
+      if (lo === null) {
+        whenOut.innerHTML = "<em>No hours picked yet</em>";
+        priceOut.textContent = "";
+        hintOut.textContent = "Open 8am to 8pm. One hour minimum.";
+        bookCta.setAttribute("href", bookCta.getAttribute("data-base"));
+        return;
+      }
+
+      if (hi === null) {
+        whenOut.textContent = "From " + label(lo);
+        priceOut.textContent = "";
+        hintOut.textContent = "Now pick the hour you would leave.";
+        return;
+      }
+
+      var length = (hi - lo) + 1;
+      var q = quote({ hours: length, weekend: false, extraGuests: 0, addons: [] });
+
+      whenOut.textContent = label(lo) + " to " + label(hi + 1 > CLOSE ? CLOSE : hi + 1);
+      priceOut.textContent = money(q.total);
+      hintOut.textContent = length + (length === 1 ? " hour" : " hours") +
+        " at " + tierFor(length).name.toLowerCase() +
+        " rates, cleaning and fees included.";
+
+      var params = new URLSearchParams();
+      params.set("hours", length);
+      params.set("start", String(lo).padStart(2, "0") + ":00");
+      bookCta.setAttribute("href", bookCta.getAttribute("data-base") + "?" + params.toString());
+    }
+
+    hours.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var h = parseInt(btn.getAttribute("data-hour"), 10);
+        if (start === null || end !== null) {
+          start = h; end = null;          // begin a fresh selection
+        } else if (h === start) {
+          end = h;                         // a single hour
+        } else {
+          end = h;
+        }
+        render();
+      });
+    });
+
+    render();
   }
 
   /* ── The playful calculator (pricing.html) ──────────────── */
@@ -368,7 +471,7 @@
       /* Tier badge */
       if (tierOut.getAttribute("data-tier") !== tier.name) {
         tierOut.setAttribute("data-tier", tier.name);
-        tierOut.textContent = tier.emoji + " " + tier.name;
+        tierOut.textContent = tier.name;
         if (!reduceMotion) {
           tierOut.classList.remove("is-morphing");
           void tierOut.offsetWidth;
@@ -474,6 +577,7 @@
       var h = parseInt(params.get("hours"), 10);
       if (h >= 1 && h <= 12) hoursIn.value = h;
     }
+    if (params.has("start") && timeIn) timeIn.value = params.get("start");
     if (params.get("weekend") === "1") weekendIn.checked = true;
     if (params.has("guests")) guestsIn.value = parseInt(params.get("guests"), 10) || 0;
     if (params.has("addons")) {
@@ -516,7 +620,7 @@
       var tier = tierFor(s.hours);
 
       hoursOut.textContent = s.hours + (s.hours === 1 ? " hour" : " hours");
-      tierOut.textContent = tier.emoji + " " + tier.name;
+      tierOut.textContent = tier.name;
 
       linesOut.innerHTML = q.lines.map(function (l) {
         return '<div class="calc__line"><span>' + l[0] +
@@ -561,7 +665,8 @@
     initTheme();
     initHeader();
     initMobileNav();
-    initReveals();
+    initDayProgress();
+    initDayStrip();
     initFaq();
     initCalculator();
     initBookingForm();

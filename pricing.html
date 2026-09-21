@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Pricing
-kicker: KES · no hidden extras
+kicker: All rates in KES
 intro: Rates drop the longer you stay. Drag the ruler below and the total works itself out.
 description: Hourly, day-rate and add-on pricing for Arnold BNB Studio in Ongata Rongai, plus a calculator that gives you your exact total before you book.
 ---
@@ -68,7 +68,7 @@ description: Hourly, day-rate and add-on pricing for Arnold BNB Studio in Ongata
         <tbody>
           {%- for a in site.data.addons %}
           <tr>
-            <td>{{ a.emoji }} {{ a.label }}</td>
+            <td>{{ a.label }}</td>
             <td class="muted-text">{{ a.note }}</td>
             <td>KES {{ a.price }}{% if a.per_unit %} ea{% endif %}</td>
           </tr>
@@ -85,7 +85,7 @@ description: Hourly, day-rate and add-on pricing for Arnold BNB Studio in Ongata
 
       <div class="calc__top">
         <p class="calc__hours" id="calcHoursOut">4<span>hours</span></p>
-        <span class="calc__tier" id="calcTier" data-tier="">✨ Sweet Spot</span>
+        <span class="calc__tier" id="calcTier" data-tier="">Sweet Spot</span>
       </div>
 
       <div class="ruler">
@@ -120,7 +120,7 @@ description: Hourly, day-rate and add-on pricing for Arnold BNB Studio in Ongata
         {%- for a in site.data.addons %}
         {%- unless a.key == 'extra_guest' %}
         <button type="button" class="chip" data-addon="{{ a.key }}" aria-pressed="false">
-          {{ a.emoji }} {{ a.label }} <span class="chip__price">KES {{ a.price }}</span>
+          {{ a.label }} <span class="chip__price">KES {{ a.price }}</span>
         </button>
         {%- endunless %}
         {%- endfor %}
