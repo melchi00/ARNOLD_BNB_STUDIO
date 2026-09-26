@@ -664,13 +664,15 @@ body.nav-open { overflow: hidden; }
 .gal--wide { grid-column: span 2; }
 .gal--tall { grid-row: span 2; min-height: 500px; }
 .gal--full { grid-column: span 4; min-height: 300px; }
-.gal__art { position: absolute; inset: 0; z-index: -1; }
-.gal--1 .gal__art { background: linear-gradient(168deg, #cfcbbd, #8d9077 70%, #5c6350); }
-.gal--2 .gal__art { background: linear-gradient(150deg, #e2ddcd, #c2b795 85%); }
-.gal--3 .gal__art { background: linear-gradient(200deg, #9aa08a, #4f5648); }
-.gal--4 .gal__art { background: linear-gradient(130deg, #d9d3c0, #97a081); }
-.gal--5 .gal__art { background: linear-gradient(140deg, #3d4450, #7b7a63); }
-.gal__art::after { content: none; }
+.gal__art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--bg-sunk);   /* shows briefly while the photo loads */
+}
 .gal__cap {
   position: absolute;
   inset: auto 0 0 0;
